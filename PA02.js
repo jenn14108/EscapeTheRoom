@@ -269,36 +269,6 @@
     )
   }
 
-	function addBalls(){
-		var numBalls = 20;
-
-
-		for(i=0;i<numBalls;i++){
-			var ball = createBall();
-			ball.position.set(randN(20)+15,30,randN(20)+15);
-			ball.scale.set(0.4,0.4,0.4);
-			scene.add(ball);
-
-			ball.addEventListener( 'collision',
-				function( other_object, relative_velocity, relative_rotation, contact_normal ) {
-					if (other_object==cone){
-						console.log("ball "+i+" hit the cone");
-						soundEffect('good.wav');
-						gameState.score += 1;  // add one to the score
-						if (gameState.score==numBalls) {
-							gameState.scene='youwon';
-						}
-            //scene.remove(ball);  // this isn't working ...
-						// make the ball drop below the scene ..
-			ll			// threejs doesn't let us remove it from the schene...
-						this.position.y = this.position.y - 100;
-						this.__dirtyPosition = true;
-					}
-
-				}
-			)
-		}
-	}
 
 	function playGameMusic(){
 		// create an AudioListener and add it to the camera
@@ -460,26 +430,6 @@
     return mesh;
   }
 
-	// function createAvatar(){
-	// 	//var geometry = new THREE.SphereGeometry( 4, 20, 20);
-	// 	var geometry = new THREE.BoxGeometry( 5, 5, 6);
-	// 	var material = new THREE.MeshLambertMaterial( { color: 0xffff00} );
-	// 	var pmaterial = new Physijs.createMaterial(material,0.9,0.5);
-	// 	//var mesh = new THREE.Mesh( geometry, material );
-	// 	var mesh = new Physijs.BoxMesh( geometry, pmaterial );
-	// 	mesh.setDamping(0.1,0.1);
-	// 	mesh.castShadow = true;
-
-	// 	avatarCam.position.set(0,4,0);
-	// 	avatarCam.lookAt(0,4,10);
-	// 	mesh.add(avatarCam);
-
-	// 	var scoop1 = createBoxMesh2(0xff0000,10,1,0.1); //the red object we see when running the program, added to original avatar
-	// 	scoop1.position.set(0,-2,5);
-	// 	mesh.add(scoop1);
-	// 	return mesh;
-	// }
-
 
 	function createConeMesh(r,h){
 		var geometry = new THREE.ConeGeometry( r, h, 32);
@@ -490,18 +440,6 @@
 		var material = new THREE.MeshLambertMaterial( { color: 0xffffff,  map: texture ,side:THREE.DoubleSide} );
 		var pmaterial = new Physijs.createMaterial(material,0.9,0.5);
 		var mesh = new Physijs.ConeMesh( geometry, pmaterial, 0 );
-		mesh.castShadow = true;
-		return mesh;
-	}
-
-
-	function createBall(){
-		//var geometry = new THREE.SphereGeometry( 4, 20, 20);
-		var geometry = new THREE.SphereGeometry( 1, 16, 16);
-		var material = new THREE.MeshLambertMaterial( { color: 0xffff00} );
-		var pmaterial = new Physijs.createMaterial(material,0.9,0.95);
-    var mesh = new Physijs.BoxMesh( geometry, pmaterial );
-		mesh.setDamping(0.1,0.1);
 		mesh.castShadow = true;
 		return mesh;
 	}
