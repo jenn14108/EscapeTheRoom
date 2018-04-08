@@ -1,9 +1,7 @@
   var scene, renderer;  // all threejs programs need these
 	var camera, avatarCam, edgeCam, juliaCam;  // we have two cameras in the main scene
-	var avatar, suzanne , gudetama, creeper,zantan;
+	var avatar, suzanne, chair, chair1, table;
 	// here are some mesh objects ...
-
-	var cone;
 
 	var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
 
@@ -17,9 +15,9 @@
 
 
 	// Here is the main game control
-  init(); //
+  init();
 	initControls();
-	animate();  // start the animation loop!
+	animate();
 
 
 	function createLoseScene() {
@@ -87,13 +85,13 @@
 
 			// create main camera
 			camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.position.set(0,50,0);
+			camera.position.set(0,40,0);
 			camera.lookAt(0,0,0);
 
 			// create the ground and the skybox
-			var ground = createGround('grass.png');
+			var ground = createGround('wood.jpg');
 			scene.add(ground);
-			var skybox = createSkyBox('sky.jpg',1);
+			var skybox = createSkyBox('crate.gif',1);
 			scene.add(skybox);
 
 			// create the avatar
@@ -108,30 +106,10 @@
       juliaCam = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 );
       juliaCam.position.set(15,15,10);
 
-			addBalls();
-
-			cone = createConeMesh(4,6);
-			cone.position.set(10,3,7);
-			scene.add(cone);
-
-      npc3 = createConeMesh(2,3);
-      			npc3.position.set(20,0,20);
-      			scene.add(npc3);
-      			npc3.addEventListener('collision',function (other_object, relative_velocity, relative_rotation, contact_normal){
-      				if (other_object == suzanne){
-      					npc3.position.y+=10;
-      					npc3.__dirtyPosition = true;
-      				}
-      			}
-      		)
-
-			addGudetama();
-      addCreeper();
-      addZantan();
-
 			initSuzanne();
-			initSuzanneOBJ();
-
+      initChairOBJ();
+      initChair1OBJ();
+      initTableOBJ();
 	}
 
 	function initSuzanne(){
@@ -165,109 +143,77 @@
 
 	}
 
+  function initChairOBJ(){
+    var loader = new THREE.OBJLoader();
+    loader.load("../models/chair.obj",
+      function (chair) {
+        console.log("loading obj file");
+        chair.castShadow = true;
+        chair.scale.x=2;
+        chair.scale.y=2;
+        chair.scale.z=2;
+        chair.position.y = 0;
+        chair.position.z = 0;
+        chair.castShadow = true;
+        scene.add(chair);
 
-	function initSuzanneOBJ(){
-		var loader = new THREE.OBJLoader();
-		loader.load("../models/millenium-falcon.obj",
-					function ( obj) {
-						console.log("loading obj file");
-						obj.scale.x=1;
-						obj.scale.y=1;
-						obj.scale.z=1;
-						obj.position.y = 2;
-						obj.position.z = 0;
+      },
+      function(xhr){
+        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
 
-						scene.add(obj);
-						obj.castShadow = true;
-					},
-					function(xhr){
-						console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
+        function(err){
+          console.log("error in loading: "+err);}
+        )
+ }
 
-					function(err){
-						console.log("error in loading: "+err);}
-				)
-	}
+ function initChair1OBJ(){
+   var loader = new THREE.OBJLoader();
+   loader.load("../models/chair1.obj",
+     function (chair1) {
+       console.log("loading chair1 file");
+       chair1.castShadow = true;
+       chair1.scale.x=1;
+       chair1.scale.y=1;
+       chair1.scale.z=1;
+       chair1.position.y = 3;
+       chair1.position.z = 5;
+       chair1.castShadow = true;
+       scene.add(chair1);
+
+     },
+     function(xhr){
+       console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
+
+       function(err){
+         console.log("error in loading: "+err);}
+       )
+}
+
+function initTableOBJ(){
+  var loader = new THREE.OBJLoader();
+  loader.load("../models/table.obj",
+    function (table) {
+      console.log("loading table file");
+      table.scale.x=0.01;
+      table.scale.y=0.01;
+      table.scale.z=0.01;
+      table.position.y = 0.01;
+      table.position.z = -5;
+      table.castShadow = true;
+      scene.add(table);
+
+    },
+    function(xhr){
+      console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
+
+      function(err){
+        console.log("error in loading: "+err);}
+      )
+}
 
 	function randN(n){
 		return Math.random()*n;
 	}
-
-
-	function addGudetama(){
-		gudetama = createGudetama();
-		gudetama.scale.set(0.4,0.4,0.4);
-
-
-		//gudetama.position.set(randN(20)+15,30,randN(20)+15);
-		gudetama.position.set(-40,40,-40);
-
-		scene.add(gudetama);
-
-		gudetama.addEventListener('collision',
-			function (other_object, relative_velocity, relative_rotation, contact_normal){
-				if (other_object == suzanne){
-						gameState.health -= 1;
-						gudetama.position.set(randN(20)+15,30,randN(20)+15);
-						if (gameState.health == 0){
-							gameState.scene = 'youlose';
-              gameState.health=10;
-						}
-
-						//this.position.y = this.position.y - 100;
-						this.__dirtyPosition = true;
-				}
-			}
-		)
-	}
-
-  function addCreeper(){
-    creeper = createCreeper();
-    creeper.scale.set(0.4,0.4,0.4);
-
-
-    //creeper.position.set(randN(20)+15,30,randN(20)+15);
-    creeper.position.set(10,40,-5);
-
-    scene.add(creeper);
-
-    creeper.addEventListener('collision',
-      function (other_object, relative_velocity, relative_rotation, contact_normal){
-        if (other_object == suzanne){
-            gameState.health -= 1;
-            creeper.position.set(randN(20)+15,30,randN(20)+15);
-            if (gameState.health == 0){
-              gameState.scene = 'youlose';
-            }
-
-            this.position.y = this.position.y - 100;
-            this.__dirtyPosition = true;
-        }
-      }
-    )
-  }
-  function addZantan(){
-    zantan = createZantan();
-    zantan.scale.set(0.4,0.4,0.4);
-
-
-    //creeper.position.set(randN(20)+15,30,randN(20)+15);
-    zantan.position.set(30,40,5);
-
-    scene.add(zantan);
-
-    zantan.addEventListener('collision',
-      function (other_object, relative_velocity, relative_rotation, contact_normal){
-        if (other_object == suzanne){
-            gameState.health += 1;
-            zantan.position.set(randN(20)+15,30,randN(20)+15);
-
-
-
-            this.__dirtyPosition = true;
-        }
-      }
-    )
-  }
 
 
 	function playGameMusic(){
@@ -382,14 +328,12 @@
 
 	function createSkyBox(image,k){
 		// creating a textured plane which receives shadows
-		var geometry = new THREE.SphereGeometry( 80, 80, 80 );
+		var geometry = new THREE.BoxGeometry( 80, 80, 80 );
 		var texture = new THREE.TextureLoader().load( '../images/'+image );
 		texture.wrapS = THREE.RepeatWrapping;
 		texture.wrapT = THREE.RepeatWrapping;
 		texture.repeat.set( k, k );
 		var material = new THREE.MeshLambertMaterial( { color: 0xffffff,  map: texture ,side:THREE.DoubleSide} );
-		//var pmaterial = new Physijs.createMaterial(material,0.9,0.5);
-		//var mesh = new THREE.Mesh( geometry, material );
 		var mesh = new THREE.Mesh( geometry, material, 0 );
 		mesh.receiveShadow = false;
 		return mesh
@@ -397,52 +341,6 @@
 
 	}
 
-	function createGudetama() {
-		var geometry = new THREE.SphereGeometry(3,19,19);
-		var texture = new THREE.TextureLoader().load('gudetama.png');
-		var material = new THREE.MeshLambertMaterial( {map: texture});
-		var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
-		var mesh = new Physijs.BoxMesh(geometry, pmaterial);
-		mesh.setDamping(0.1,0.1);
-		mesh.castShadow = true;
-		return mesh;
-  }
-
-  function createCreeper() {
-    var geometry = new THREE.BoxGeometry(8,8,8);
-    var texture = new THREE.TextureLoader().load('../images/'+'creeper.jpg');
-    var material = new THREE.MeshLambertMaterial( {map: texture});
-    var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
-    var mesh = new Physijs.BoxMesh(geometry, pmaterial);
-    mesh.setDamping(0.1,0.1);
-    mesh.castShadow = true;
-    return mesh;
-  }
-
-  function createZantan() {
-    var geometry = new THREE.BoxGeometry(8,8,8);
-    var texture = new THREE.TextureLoader().load('../images/'+'red.jpg');
-    var material = new THREE.MeshLambertMaterial( {map: texture});
-    var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
-    var mesh = new Physijs.BoxMesh(geometry, pmaterial);
-    mesh.setDamping(0.1,0.1);
-    mesh.castShadow = true;
-    return mesh;
-  }
-
-
-	function createConeMesh(r,h){
-		var geometry = new THREE.ConeGeometry( r, h, 32);
-		var texture = new THREE.TextureLoader().load( '../images/tile.jpg' );
-		texture.wrapS = THREE.RepeatWrapping;
-		texture.wrapT = THREE.RepeatWrapping;
-		texture.repeat.set( 1, 1 );
-		var material = new THREE.MeshLambertMaterial( { color: 0xffffff,  map: texture ,side:THREE.DoubleSide} );
-		var pmaterial = new Physijs.createMaterial(material,0.9,0.5);
-		var mesh = new Physijs.ConeMesh( geometry, pmaterial, 0 );
-		mesh.castShadow = true;
-		return mesh;
-	}
 
 	function initControls(){
 			clock = new THREE.Clock();
@@ -473,8 +371,6 @@
 		if (gameState.scene == 'youlose' && event.key=='r'){
 			gameState.scene = 'main';
 			gameState.score = 0;
-			addBalls();
-			addGudetama();
 			return;
 		}
 
@@ -532,34 +428,6 @@
 	}
 
 
-
-  function updateGudetama(){
-    gudetama.lookAt(suzanne.position);
-    if (gudetama.position.distanceTo(suzanne.position)<=20) {
-      gudetama.__dirtyPosition = true;
-      gudetama.setLinearVelocity(gudetama.getWorldDirection());
-    }
- }
-
-  function updateCreeper(){
-		creeper.lookAt(suzanne.position);
-		creeper.__dirtyPosition = true;
-
-		var b = new THREE.Vector3(0,1,0);
-		b = creeper.lookAt(suzanne.position).transform.position - creeper.transform.position;
-		creeper.rigidbody.AddForce(100 * a);
-
-	}
-  function updateZantan(){
-    zantan.lookAt(suzanne.position);
-    zantan.__dirtyPosition = true;
-
-    var c = new THREE.Vector3(0,1,0);
-    c = zantan.lookAt(suzanne.position).transform.position - zantan.transform.position;
-    zantan.rigidbody.AddForce(100 * a);
-
-  }
-
   function updateAvatar(){
 
 		"change the avatar's linear or angular velocity based on controls state (set by WSAD key presses)"
@@ -595,7 +463,6 @@
 	function animate() {
 		requestAnimationFrame( animate );
 		switch(gameState.scene) {
-
 			case "startgame":
 				startText.rotateY(0.005);
 				renderer.render(startScene,startCamera);
@@ -614,7 +481,6 @@
 
 			case "main":
 				updateAvatar();
-        updateGudetama();
         edgeCam.lookAt(suzanne.position);
         juliaCam.lookAt(suzanne.position);
 	    	scene.simulate();
