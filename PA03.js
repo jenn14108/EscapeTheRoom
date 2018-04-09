@@ -1,6 +1,6 @@
   var scene, renderer;  // all threejs programs need these
 	var camera, avatarCam, edgeCam, juliaCam;  // we have two cameras in the main scene
-	var avatar, suzanne, chair, chair1, table, finn;
+	var avatar, suzanne, bed, chair1, table, finn;
 	// here are some mesh objects ...
 
 	var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
@@ -107,7 +107,7 @@
       juliaCam.position.set(15,15,10);
 
 			initSuzanne();
-      initChairOBJ();
+      initBed();
       initChair1OBJ();
       initTableOBJ();
       initFinnOBJ();
@@ -150,14 +150,14 @@
       function (finn) {
         console.log("loading finn file");
         finn.castShadow = true;
-        finn.scale.x=2;
-        finn.scale.y=2;
-        finn.scale.z=2;
-        finn.position.y = 0;
-        finn.position.z = 0;
+        finn.scale.x=0.009;
+        finn.scale.y=0.009;
+        finn.scale.z=0.009;
+        finn.position.y = 6.5;
+        finn.position.z = 5;
+        finn.position.x = -10;
         finn.castShadow = true;
         scene.add(finn);
-
       },
       function(xhr){
         console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
@@ -167,29 +167,32 @@
         )
   }
 
-  function initChairOBJ(){
-    var loader = new THREE.OBJLoader();
-    loader.load("../models/chair.obj",
-      function (chair) {
-        console.log("loading obj file");
-        chair.castShadow = true;
-        chair.scale.x=2;
-        chair.scale.y=2;
-        chair.scale.z=2;
-        chair.position.y = 0;
-        chair.position.z = 0;
-        chair.castShadow = true;
-        scene.add(chair);
+ function initBed(){
+   var loader = new THREE.JSONLoader();
+   loader.load("../models/bed.json",
+         function ( geometry, materials ) {
+           console.log("loading bed");
+           var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+           bed = new Physijs.BoxMesh(geometry, material );
+           bed.setDamping(0.1,0.1);
+           bed.castShadow = true;
 
-      },
-      function(xhr){
-        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
+           var s = 0.05;
+           bed.scale.y=s;
+           bed.scale.x=s;
+           bed.scale.z=s;
+           bed.position.z = -5;
+           bed.position.y = 7;
+           bed.position.x = -5;
+           bed.castShadow = true;
+           scene.add(bed);
+         },
+         function(xhr){
+           console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
+         function(err){console.log("error in loading: "+err);}
+       )
 
-        function(err){
-          console.log("error in loading: "+err);}
-        )
  }
-
  function initChair1OBJ(){
    var loader = new THREE.OBJLoader();
    loader.load("../models/chair1.obj",
@@ -426,7 +429,6 @@ function initTableOBJ(){
 			case "ArrowDown": avatarCam.translateZ(1);break;
 			case "q": avatarCam.translateX(-1);break;
 			case "e": avatarCam.translateX(1);break;
-
 			case "p": gameState.scene == 'main';
 			//stands for upright. This is for resetting the position of suzanne so she is upright
 			//when she falls over and faces some weird position
