@@ -1,6 +1,6 @@
   var scene, renderer;  // all threejs programs need these
 	var camera, avatarCam, edgeCam, juliaCam;  // we have two cameras in the main scene
-	var avatar, suzanne, bed, chair1, table, finn;
+	var avatar, suzanne, bed, chair1, table, finn,coffeeTable;
 	// here are some mesh objects ...
 
 	var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
@@ -107,7 +107,8 @@
       juliaCam.position.set(15,15,10);
 
 			initSuzanne();
-      initBed();
+      //initBed();
+      initCoffeeTable();
       initChair1OBJ();
       initTableOBJ();
       initFinnOBJ();
@@ -173,19 +174,44 @@
          function ( geometry, materials ) {
            console.log("loading bed");
            var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
-           bed = new Physijs.BoxMesh(geometry, material );
+           var pmaterial = new Physijs.createMaterial(material, 0.1, 0.5);
+           bed = new Physijs.BoxMesh(geometry, pmaterial, 100);
            bed.setDamping(0.1,0.1);
-           bed.castShadow = true;
-
-           var s = 0.05;
+           var s = 5;
            bed.scale.y=s;
            bed.scale.x=s;
            bed.scale.z=s;
-           bed.position.z = -5;
-           bed.position.y = 7;
-           bed.position.x = -5;
+           bed.position.z = 5;
+           bed.position.y = 0.01;
+           bed.position.x = 10;
            bed.castShadow = true;
            scene.add(bed);
+         },
+         function(xhr){
+           console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
+         function(err){console.log("error in loading: "+err);}
+       )
+
+ }
+ function initCoffeeTable(){
+   var loader = new THREE.JSONLoader();
+   loader.load("../models/coffeeTable.json",
+         function ( geometry, materials ) {
+           console.log("loading coffee table");
+           var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+           var pmaterial = new Physijs.createMaterial(material, 0.2, 0.5);
+           coffeeTable = new Physijs.BoxMesh(geometry, pmaterial, 50);
+           coffeeTable.setDamping(0.1,0.1);
+           var s = 3;
+           coffeeTable.scale.y=s;
+           coffeeTable.scale.x=s;
+           coffeeTable.scale.z=s;
+           coffeeTable.rotateX(Math.PI/2);
+           coffeeTable.position.z = -8;
+           coffeeTable.position.y = 1;
+           coffeeTable.position.x = 7;
+           coffeeTable.castShadow = true;
+           scene.add(coffeeTable);
          },
          function(xhr){
            console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
