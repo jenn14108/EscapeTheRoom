@@ -107,7 +107,7 @@
       juliaCam.position.set(15,15,10);
 
 			initSuzanne();
-      //initBed();
+      initBed();
       initCoffeeTable();
       initChair1OBJ();
       initTableOBJ();
@@ -181,9 +181,9 @@
            bed.scale.y=s;
            bed.scale.x=s;
            bed.scale.z=s;
-           bed.position.z = 5;
+           bed.position.z = -15;
            bed.position.y = 0.01;
-           bed.position.x = 10;
+           bed.position.x = -15;
            bed.castShadow = true;
            scene.add(bed);
          },
@@ -206,8 +206,7 @@
            coffeeTable.scale.y=s;
            coffeeTable.scale.x=s;
            coffeeTable.scale.z=s;
-           coffeeTable.rotateX(Math.PI/2);
-           coffeeTable.position.z = -8;
+           coffeeTable.position.z = -10;
            coffeeTable.position.y = 1;
            coffeeTable.position.x = 7;
            coffeeTable.castShadow = true;
