@@ -200,7 +200,8 @@
    loader.load("../models/coffeeTable.json",
          function ( geometry, materials ) {
            console.log("loading coffee table");
-           var material = new THREE.MeshLambertMaterial();
+           var texture = new THREE.TextureLoader().load('../images/bluewood.jpeg');
+           var material = new THREE.MeshLambertMaterial({map: texture});
            var pmaterial = new Physijs.createMaterial(material, 0.2, 0.5);
            coffeeTable = new Physijs.BoxMesh(geometry, pmaterial, 200);
            coffeeTable.setDamping(0.1,0.1);
