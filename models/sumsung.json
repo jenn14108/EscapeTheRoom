@@ -1,0 +1,19 @@
+{
+    "uvs":[],
+    "colors":[],
+    "vertices":[43.2363,-2.92469,42.8406,-43.2363,-2.92469,42.8406,43.2363,-2.92469,-43.6319,-43.2363,-2.92469,-43.6319],
+    "faces":[35,2,0,1,3,0,0,0,0,0],
+    "metadata":{
+        "colors":0,
+        "vertices":4,
+        "uvs":0,
+        "generator":"io_three",
+        "normals":1,
+        "version":3,
+        "faces":1,
+        "materials":0,
+        "type":"Geometry"
+    },
+    "normals":[0,-1,4.41146e-08],
+    "materials":[]
+}

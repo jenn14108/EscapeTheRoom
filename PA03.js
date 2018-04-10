@@ -1,6 +1,6 @@
   var scene, renderer;  // all threejs programs need these
 	var camera, avatarCam, edgeCam, juliaCam;  // we have two cameras in the main scene
-	var avatar, suzanne, bed, chair1, table, finn,coffeeTable;
+	var avatar, suzanne, bed, chair1, finn,coffeeTable;
 	// here are some mesh objects ...
 
 	var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
@@ -110,7 +110,6 @@
       initBed();
       initCoffeeTable();
       initChair1OBJ();
-      initTableOBJ();
       initFinnOBJ();
 	}
 
@@ -119,7 +118,7 @@
 		loader.load("../models/suzanne.json",
 					function ( geometry, materials ) {
 						console.log("loading suzanne");
-						var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+						var material = new THREE.MeshLambertMaterial( );
 						suzanne = new Physijs.BoxMesh(geometry, material );
 						suzanne.setDamping(0.1,0.1);
 						suzanne.castShadow = true;
@@ -128,7 +127,7 @@
 						avatarCam.lookAt(0,4,10);
 						suzanne.add(avatarCam);
 
-						var s = 0.5;
+						var s = 2;
 						suzanne.scale.y=s;
 						suzanne.scale.x=s;
 						suzanne.scale.z=s;
@@ -174,10 +173,10 @@
          function ( geometry, materials ) {
            console.log("loading bed");
            var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
-           var pmaterial = new Physijs.createMaterial(material, 0.1, 0.5);
-           bed = new Physijs.BoxMesh(geometry, pmaterial, 100);
+           var pmaterial = new Physijs.createMaterial(material, 0, 0.5);
+           bed = new Physijs.BoxMesh(geometry, pmaterial, 1000);
            bed.setDamping(0.1,0.1);
-           var s = 5;
+           var s = 7;
            bed.scale.y=s;
            bed.scale.x=s;
            bed.scale.z=s;
@@ -193,22 +192,25 @@
        )
 
  }
+
+
+
  function initCoffeeTable(){
    var loader = new THREE.JSONLoader();
    loader.load("../models/coffeeTable.json",
          function ( geometry, materials ) {
            console.log("loading coffee table");
-           var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+           var material = new THREE.MeshLambertMaterial();
            var pmaterial = new Physijs.createMaterial(material, 0.2, 0.5);
-           coffeeTable = new Physijs.BoxMesh(geometry, pmaterial, 50);
+           coffeeTable = new Physijs.BoxMesh(geometry, pmaterial, 200);
            coffeeTable.setDamping(0.1,0.1);
-           var s = 3;
+           var s = 7;
            coffeeTable.scale.y=s;
            coffeeTable.scale.x=s;
            coffeeTable.scale.z=s;
            coffeeTable.position.z = -10;
-           coffeeTable.position.y = 1;
-           coffeeTable.position.x = 7;
+           coffeeTable.position.y = 5;
+           coffeeTable.position.x = 10;
            coffeeTable.castShadow = true;
            scene.add(coffeeTable);
          },
@@ -241,27 +243,6 @@
        )
 }
 
-function initTableOBJ(){
-  var loader = new THREE.OBJLoader();
-  loader.load("../models/table.obj",
-    function (table) {
-      console.log("loading table file");
-      table.scale.x=0.01;
-      table.scale.y=0.01;
-      table.scale.z=0.01;
-      table.position.y = 0.01;
-      table.position.z = -5;
-      table.castShadow = true;
-      scene.add(table);
-
-    },
-    function(xhr){
-      console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
-
-      function(err){
-        console.log("error in loading: "+err);}
-      )
-}
 
 	function randN(n){
 		return Math.random()*n;
