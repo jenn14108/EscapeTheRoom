@@ -1,13 +1,13 @@
   var scene, renderer;  // all threejs programs need these
-	var camera, avatarCam, edgeCam, juliaCam;  // we have two cameras in the main scene
-	var avatar, suzanne, bed, chair1, finn,coffeeTable;
+	var camera, avatarCam;  // we have two cameras in the main scene
+	var avatar, suzanne, chair1,coffeeTable, text1, ball1;
 	// here are some mesh objects ...
 
 	var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
 
 	var controls =
 	     {fwd:false, bwd:false, left:false, right:false,
-				speed:10, fly:false, reset:false,
+				speed:10, fly:false, reset:false, room1Tele: false,
 		    camera:camera}
 
 	var gameState =
@@ -70,7 +70,9 @@
 			createEndScene();
 			createLoseScene();
 			initRenderer();
+      initTextMesh()
 			createMainScene();
+      initTextMesh1()
 	}
 
 
@@ -85,14 +87,23 @@
 
 			// create main camera
 			camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.position.set(0,40,0);
+			camera.position.set(0,120,0);
 			camera.lookAt(0,0,0);
 
 			// create the ground and the skybox
 			var ground = createGround('wood.jpg');
 			scene.add(ground);
-			var skybox = createSkyBox('crate.gif',1);
-			scene.add(skybox);
+      var wall1 = createWalls('bluewood.jpeg',3,180);
+      wall1.position.set(0,0,0);
+      wall1.__dirtyPosition=true;
+      scene.add(wall1);
+
+      var wall2 = createWalls('bluewood.jpeg',3,180);
+      wall2.rotateY(Math.PI/2);
+      wall2.position.set(0,0,0);
+      wall2.__dirtyPosition=true;
+      scene.add(wall2);
+
 
 			// create the avatar
 			avatarCam = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -100,17 +111,22 @@
 			avatarCam.translateZ(3);
 			gameState.camera = avatarCam;
 
-      edgeCam = new THREE.PerspectiveCamera( 120, window.innerWidth / window.innerHeight, 0.1, 1000 );
-      edgeCam.position.set(20,20,10);
+      ball1 = createBall();
+      ball1.translateX(-60);
+			ball1.translateZ(-60);
+      ball1.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
+          if (other_object==suzanne){
+            controls.room1Tele = true;
+          }
+        }
+      )
+      scene.add(ball1);
 
-      juliaCam = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 );
-      juliaCam.position.set(15,15,10);
 
 			initSuzanne();
-      initBed();
       initCoffeeTable();
       initChair1OBJ();
-      initFinnOBJ();
+
 	}
 
 	function initSuzanne(){
@@ -131,9 +147,9 @@
 						suzanne.scale.y=s;
 						suzanne.scale.x=s;
 						suzanne.scale.z=s;
-						suzanne.position.z = -5;
+						suzanne.position.z = -50;
 						suzanne.position.y = 3;
-						suzanne.position.x = -5;
+						suzanne.position.x = -50;
 						suzanne.castShadow = true;
 						scene.add(suzanne);
 					},
@@ -144,56 +160,15 @@
 
 	}
 
-  function initFinnOBJ(){
-    var loader = new THREE.OBJLoader();
-    loader.load("../models/finn.obj",
-      function (finn) {
-        console.log("loading finn file");
-        finn.castShadow = true;
-        finn.scale.x=0.009;
-        finn.scale.y=0.009;
-        finn.scale.z=0.009;
-        finn.position.y = 6.5;
-        finn.position.z = 5;
-        finn.position.x = -10;
-        finn.castShadow = true;
-        scene.add(finn);
-      },
-      function(xhr){
-        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
-
-        function(err){
-          console.log("error in loading: "+err);}
-        )
-  }
-
- function initBed(){
-   var loader = new THREE.JSONLoader();
-   loader.load("../models/bed.json",
-         function ( geometry, materials ) {
-           console.log("loading bed");
-           var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
-           var pmaterial = new Physijs.createMaterial(material, 0, 0.5);
-           bed = new Physijs.BoxMesh(geometry, pmaterial, 1000);
-           bed.setDamping(0.1,0.1);
-           var s = 7;
-           bed.scale.y=s;
-           bed.scale.x=s;
-           bed.scale.z=s;
-           bed.position.z = -15;
-           bed.position.y = 0.01;
-           bed.position.x = -15;
-           bed.castShadow = true;
-           scene.add(bed);
-         },
-         function(xhr){
-           console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );},
-         function(err){console.log("error in loading: "+err);}
-       )
-
- }
-
-
+  function createBall(){
+    var geometry = new THREE.SphereGeometry( 1, 16, 16);
+    var material = new THREE.MeshLambertMaterial( { color: 0xffff00} );
+    var pmaterial = new Physijs.createMaterial(material,0.9,0.5);
+    var mesh = new Physijs.BoxMesh( geometry, material );
+    mesh.setDamping(0.1,0.1);
+    mesh.castShadow = true;
+    return mesh;
+}
 
  function initCoffeeTable(){
    var loader = new THREE.JSONLoader();
@@ -231,8 +206,10 @@
        chair1.scale.y=1;
        chair1.scale.z=1;
        chair1.position.y = 3;
-       chair1.position.z = 5;
+       chair1.position.z = -20;
+       chair1.position.x = -40;
        chair1.castShadow = true;
+       chair1.rotateY(Math.PI/2);
        scene.add(chair1);
 
      },
@@ -247,43 +224,6 @@
 
 	function randN(n){
 		return Math.random()*n;
-	}
-
-
-	function playGameMusic(){
-		// create an AudioListener and add it to the camera
-		var listener = new THREE.AudioListener();
-		camera.add( listener );
-
-		// create a global audio source
-		var sound = new THREE.Audio( listener );
-
-		// load a sound and set it as the Audio object's buffer
-		var audioLoader = new THREE.AudioLoader();
-		audioLoader.load( '/sounds/loop.mp3', function( buffer ) {
-			sound.setBuffer( buffer );
-			sound.setLoop( true );
-			sound.setVolume( 0.05 );
-			sound.play();
-		});
-	}
-
-	function soundEffect(file){
-		// create an AudioListener and add it to the camera
-		var listener = new THREE.AudioListener();
-		camera.add( listener );
-
-		// create a global audio source
-		var sound = new THREE.Audio( listener );
-
-		// load a sound and set it as the Audio object's buffer
-		var audioLoader = new THREE.AudioLoader();
-		audioLoader.load( '/sounds/'+file, function( buffer ) {
-			sound.setBuffer( buffer );
-			sound.setLoop( false );
-			sound.setVolume( 0.5 );
-			sound.play();
-		});
 	}
 
 	/* We don't do much here, but we could do more!
@@ -375,6 +315,20 @@
 
 	}
 
+  function createWalls(image,k, size){
+  	// creating a textured plane which receives shadows
+  	var geometry = new THREE.PlaneGeometry(size,120,size);
+  	var texture = new THREE.TextureLoader().load( '../images/'+image );
+  	texture.wrapS = THREE.RepeatWrapping;
+  	texture.wrapT = THREE.RepeatWrapping;
+  	texture.repeat.set(k,k);
+  	var material = new THREE.MeshLambertMaterial( { color: 0xffffff,  map: texture ,side:THREE.DoubleSide} );
+  	var mesh = new Physijs.BoxMesh( geometry, material, 0 );
+  	mesh.receiveShadow = true;
+  	return mesh
+  	// we need to rotate the mesh 90 degrees to make it horizontal not vertical
+  }
+
 
 	function initControls(){
 			clock = new THREE.Clock();
@@ -391,14 +345,12 @@
 
 		if (gameState.scene == 'startgame' && event.key == 'p'){
 			gameState.scene = 'main';
-			addBalls();
 			return;
 		}
 
 		if (gameState.scene == 'youwon' && event.key=='r') {
 			gameState.scene = 'main';
 			gameState.score = 0;
-			addBalls();
 			return;
 		}
 
@@ -426,8 +378,6 @@
 			// switch cameras
 			case "1": gameState.camera = camera; break;
 			case "2": gameState.camera = avatarCam; break;
-      case "3": gameState.camera = edgeCam; break;
-      case "4": gameState.camera = juliaCam; break;
 
 			// move the camera around, relative to the avatar
 			case "ArrowLeft": avatarCam.translateY(1);break;
@@ -486,6 +436,12 @@
 		} else if (controls.right){
 			suzanne.setAngularVelocity(new THREE.Vector3(0,-controls.speed*0.1,0));
 		}
+    if (controls.room1Tele) {
+      suzanne.position.x=40;
+      suzanne.position.z=-40;
+      suzanne.__dirtyPosition=true;
+      controls.room1Tele = false;
+    }
 
     if (controls.reset){
       suzanne.__dirtyPosition = true;
@@ -514,8 +470,6 @@
 
 			case "main":
 				updateAvatar();
-        edgeCam.lookAt(suzanne.position);
-        juliaCam.lookAt(suzanne.position);
 	    	scene.simulate();
 				if (gameState.camera!= 'none'){
 					renderer.render( scene, gameState.camera );
@@ -534,3 +488,83 @@
 		+ '</div>';
 
 	}
+
+  function initTextMesh(){
+   var loader = new THREE.FontLoader();
+   loader.load( '/fonts/helvetiker_regular.typeface.json',
+          createTextMesh);
+   console.log("preparing to load the font");
+
+  }
+
+
+  function createTextMesh(font) {
+   var textGeometry =
+    new THREE.TextGeometry('Welcome to room 1. \n Go to the ball!',
+      {
+       font: font,
+       size: 4,
+       height: 2,
+       curveSegments: 12,
+       bevelEnabled: true,
+       bevelThickness: 0.01,
+       bevelSize: 0.08,
+       bevelSegments: 5
+      }
+     );
+
+   var textMaterial =
+    new THREE.MeshLambertMaterial( { color: 0xaaaaff } );
+
+   textMesh =
+    new THREE.Mesh( textGeometry, textMaterial );
+
+    textMesh.position.x= -25;
+    textMesh.position.z= -30;
+    textMesh.position.y= 10;
+    textMesh.rotateY(Math.PI);
+    scene.add(textMesh);
+
+
+   console.log("added textMesh to scene");
+  }
+
+  function initTextMesh1(){
+   var loader = new THREE.FontLoader();
+   loader.load( '/fonts/helvetiker_regular.typeface.json',
+          createTextMesh1);
+   console.log("preparing to load the font");
+
+  }
+
+
+  function createTextMesh1(font) {
+   var textGeometry =
+    new THREE.TextGeometry('Welcome to room 2. \n Hint: something can be moved!',
+      {
+       font: font,
+       size: 4,
+       height: 2,
+       curveSegments: 12,
+       bevelEnabled: true,
+       bevelThickness: 0.01,
+       bevelSize: 0.08,
+       bevelSegments: 5
+      }
+     );
+
+   var textMaterial =
+    new THREE.MeshLambertMaterial( { color: 0xaaaaff } );
+
+   textMesh =
+    new THREE.Mesh( textGeometry, textMaterial );
+
+    textMesh.position.x= 20;
+    textMesh.position.z= -80;
+    textMesh.position.y= 10;
+    //textMesh.rotateY(Math.PI);
+    scene.add(textMesh);
+
+
+   console.log("added textMesh to scene");
+  }
