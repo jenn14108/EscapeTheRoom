@@ -1,6 +1,6 @@
 var scene, renderer;
 var camera, avatarCam;
-var avatar, suzanne, chair1,coffeeTable, ball1, ball2, gift;
+var avatar, suzanne, chair1,coffeeTable, ball1, ball2, gift,gift1;
 var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
 var controls =
 	{fwd:false, bwd:false, left:false, right:false,
@@ -115,22 +115,27 @@ function createMainScene(){
 	ball2.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
 		  if (other_object==coffeeTable){
 		    controls.room2Tele = true;
+				gift=createGift();
+				gift.translateX(30);
+				gift.translateZ(-30);
+				gift.translateY(3);
+				gift.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
+							if (other_object==suzanne){
+								controls.room2Tele2 = true;
+							}
+						}
+					)
+			  scene.add(gift);
 		  }
 		}
 	)
 	scene.add(ball2);
 
-	gift=createGift();
-	gift.translateX(-30);
-	gift.translateZ(-30);
-	gift.translateY(3);
-	gift.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
-				if (other_object==suzanne){
-					controls.room2Tele2 = true;
-				}
-			}
-		)
-  scene.add(gift);
+	gift1 = createGift();
+	gift1.translateX(-30);
+	gift1.translateZ(-50);
+	gift1.translateY(3);
+	scene.add(gift1);
 
 	initSuzanne();
   initCoffeeTable();
@@ -179,7 +184,7 @@ function createBall(){
 }
 
 function createGift(){
-	var geometry = new THREE.BoxGeometry( 5, 5, 5);
+	var geometry = new THREE.BoxGeometry(5, 5, 5);
 	var texture = new THREE.TextureLoader().load('../images/'+'gift.jpg');
   var material = new THREE.MeshLambertMaterial( {map: texture});
   var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
