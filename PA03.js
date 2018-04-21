@@ -17,19 +17,19 @@ function createLoseScene() {
 	loseScene = initScene();
 	loseText = createSkyBox('youlose.png', 10);
 	loseScene.add(loseText);
+	loseText.rotateX(Math.PI);
 	var light3 = createPointLight();
 	light3.position.set(0,200,20);
 	loseScene.add(light3);
 	loseCamera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
 	loseCamera.position.set(0,50,1);
-	loseCamera.lookAt(0,0,0);
+	loseCamera.lookAt(loseText);
 }
 
 
 function createEndScene(){
 	endScene = initScene();
 	endText = createSkyBox('youwon.png',10);
-	//endText.rotateX(Math.PI);
 	endScene.add(endText);
 	var light1 = createPointLight();
 	light1.position.set(0,200,20);
@@ -480,16 +480,23 @@ function updateAvatar(){
 			suzanne.__dirtyPosition=true;
 			controls.room2Tele2 = false;
 		}
+
+	if (suzanne.position.y<=0) {
+		gameState.scene="youlose";
+	}
+	if (coffeeTable.position.y<=0) {
+		gameState.scene="youlose";
+	}
 }
 
 function animate() {
 	requestAnimationFrame( animate );
-	if (suzanne.position.y<=-1) {
-		gameState.scene="youlose";
-	}
-	if (coffeeTable.position.y<=-1) {
-		gameState.scene="youlose";
-	}
+	// if (suzanne.position.y<=0) {
+	// 	gameState.scene="youlose";
+	// }
+	// if (coffeeTable.position.y<=0) {
+	// 	gameState.scene="youlose";
+	// }
 	switch(gameState.scene) {
 		case "startgame":
 			//startText.rotateY(0.005);
@@ -508,7 +515,7 @@ function animate() {
 
 		case "main":
 			updateAvatar();
-    	scene.simulate();
+    		scene.simulate();
 			if (gameState.camera!= 'none'){
 				renderer.render( scene, gameState.camera );
 			}
