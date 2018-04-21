@@ -42,7 +42,7 @@ function createEndScene(){
 
 function createStartScene(){
 	startScene = initScene();
-	startText = createSkyBox('start.png', 1);
+	startText = createSkyBox1('start.png', 1);
 	startText.rotateX(-Math.PI/2);
 	startScene.add(startText);
 	var light2 = createPointLight();
@@ -354,7 +354,22 @@ function createGround(image){
 
 function createSkyBox(image,k){
 	// creating a textured plane which receives shadows
-	var geometry = new THREE.PlaneGeometry(80, 80, 80);
+	var geometry = new THREE.SphereGeometry( 80, 80, 80 );
+	var texture = new THREE.TextureLoader().load( '../images/'+image );
+	texture.wrapS = THREE.RepeatWrapping;
+	texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set( k, k );
+	var material = new THREE.MeshLambertMaterial( { color: 0xffffff,  map: texture ,side:THREE.DoubleSide} );
+	var mesh = new THREE.Mesh( geometry, material, 0 );
+	mesh.receiveShadow = false;
+	return mesh
+	// we need to rotate the mesh 90 degrees to make it horizontal not vertical
+
+}
+
+function createSkyBox1(image,k){
+	// creating a textured plane which receives shadows
+	var geometry = new THREE.PlaneGeometry(110,77.6);
 	var texture = new THREE.TextureLoader().load( '../images/'+image );
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.wrapT = THREE.RepeatWrapping;
@@ -382,8 +397,6 @@ function createWalls(image,k, size){
 }
 
 function initControls(){
-	clock = new THREE.Clock();
-	clock.start();
 	window.addEventListener( 'keydown', keydown);
 	window.addEventListener( 'keyup',   keyup );
 }
