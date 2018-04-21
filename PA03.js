@@ -1,6 +1,6 @@
 var scene, renderer;
 var camera, avatarCam;
-var avatar, suzanne, chair1,coffeeTable, ball1, ball2, gift,gift1;
+var avatar, suzanne, toilet,coffeeTable, ball1, ball2, gift,gift1,ball3, ball4, count, counter, ball5;
 var startScene, endScene, endCamera, endText, startText, startCamera, loseScene, loseCamera, loseText;
 var controls =
 	{fwd:false, bwd:false, left:false, right:false,
@@ -64,10 +64,12 @@ function init(){
 	initTextMesh();
 	createMainScene();
 	initTextMesh1();
-	initTextMesh4();
+	initTextMesh3();
+	initTextMesh5();
 }
 
 function createMainScene(){
+	counter = 0;
 	var light1 = createPointLight();
 	light1.position.set(0,200,20);
 	scene.add(light1);
@@ -82,12 +84,12 @@ function createMainScene(){
 	// create the ground and the skybox
 	var ground = createGround('wood.jpg');
 	scene.add(ground);
-	var wall1 = createWalls('bluewood.jpeg',3,180);
+	var wall1 = createWalls('pinkwood.png',3,180);
 	wall1.position.set(0,0,0);
 	wall1.__dirtyPosition=true;
 	scene.add(wall1);
 
-	var wall2 = createWalls('bluewood.jpeg',3,180);
+	var wall2 = createWalls('pinkwood.png',3,180);
 	wall2.rotateY(Math.PI/2);
 	wall2.position.set(0,0,0);
 	wall2.__dirtyPosition=true;
@@ -113,12 +115,12 @@ function createMainScene(){
 	ball2.translateX(40);
 	ball2.translateZ(-25);
 	ball2.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
-		  if (other_object==coffeeTable){
-		    controls.room2Tele = true;
+		  if (other_object==coffeeTable && counter == 0){
 				gift=createGift();
-				gift.translateX(30);
-				gift.translateZ(-30);
+				gift.translateX(60);
+				gift.translateZ(-60);
 				gift.translateY(3);
+				counter++;
 				gift.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
 							if (other_object==suzanne){
 								controls.room2Tele2 = true;
@@ -131,7 +133,41 @@ function createMainScene(){
 	)
 	scene.add(ball2);
 
-	gift1 = createGift();
+	ball3 = createBall();
+	ball3.translateX(-60);
+	ball3.translateZ(60);
+	ball3.translateY(3);
+	scene.add(ball3);
+
+	ball4 = createBall();
+  ball4.translateX(-50);
+	ball4.translateZ(60);
+	ball4.translateY(3);
+  ball4.addEventListener('collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
+        if (other_object==ball3){
+					if (count<4) {
+						count++;
+					} else {
+						initTextMesh4();
+					}
+        }
+      }
+    )
+  scene.add(ball4);
+
+	ball5 = createBall();
+	ball5.translateX(40);
+	ball5.translateZ(40);
+	ball5.translateY(2);
+	ball5.addEventListener('collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
+				if (other_object==suzanne){
+					gameState.scene == 'youwon';
+				}
+			}
+		)
+	scene.add(ball5);
+
+	gift1 = createGift1();
 	gift1.translateX(-30);
 	gift1.translateZ(-50);
 	gift1.translateY(3);
@@ -139,7 +175,7 @@ function createMainScene(){
 
 	initSuzanne();
   initCoffeeTable();
-  initChair1OBJ();
+  initToiletOBJ();
 }
 
 function initSuzanne(){
@@ -194,12 +230,23 @@ function createGift(){
 	return mesh;
 }
 
+function createGift1(){
+	var geometry = new THREE.BoxGeometry(5, 5, 5);
+	var texture = new THREE.TextureLoader().load('../images/'+'bluewood.jpeg');
+  var material = new THREE.MeshLambertMaterial( {map: texture});
+  var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
+	var mesh = new Physijs.BoxMesh( geometry, material, 100);
+	mesh.setDamping(0.1,0.1);
+	mesh.castShadow = true;
+	return mesh;
+}
+
 function initCoffeeTable(){
    var loader = new THREE.JSONLoader();
    loader.load("../models/coffeeTable.json",
 		function ( geometry, materials ) {
 		console.log("loading coffee table");
-		var texture = new THREE.TextureLoader().load('../images/bluewood.jpeg');
+		var texture = new THREE.TextureLoader().load('../images/yellowwood.jpeg');
 		var material = new THREE.MeshLambertMaterial({map: texture});
 		var pmaterial = new Physijs.createMaterial(material, 0.2, 0.5);
 		coffeeTable = new Physijs.BoxMesh(geometry, pmaterial, 200);
@@ -221,21 +268,21 @@ function initCoffeeTable(){
 
 }
 
-function initChair1OBJ(){
+function initToiletOBJ(){
 	var loader = new THREE.OBJLoader();
-	loader.load("../models/chair1.obj",
-		function (chair1) {
-		console.log("loading chair1 file");
-		chair1.castShadow = true;
-		chair1.scale.x=2.5;
-		chair1.scale.y=2.5;
-		chair1.scale.z=2.5;
-		chair1.position.y = 8;
-		chair1.position.z = -40;
-		chair1.position.x = -20;
-		chair1.castShadow = true;
-		chair1.rotateY(Math.PI/2);
-		scene.add(chair1);
+	loader.load("../models/toilet.obj",
+		function (toilet) {
+		console.log("loading toilet file");
+		toilet.castShadow = true;
+		toilet.scale.x=0.1;
+		toilet.scale.y=0.1;
+		toilet.scale.z=0.1;
+		toilet.position.y = 6;
+		toilet.position.z = 40;
+		toilet.position.x = 40;
+		toilet.castShadow = true;
+		toilet.rotateY(Math.PI/2);
+		scene.add(toilet);
 
 		},
 		function(xhr){
@@ -283,23 +330,6 @@ function createPointLight(){
 	return light;
 }
 
-function createBoxMesh(color){
-	var geometry = new THREE.BoxGeometry( 1, 1, 1);
-	var material = new THREE.MeshLambertMaterial( { color: color} );
-	mesh = new Physijs.BoxMesh( geometry, material );
-	//mesh = new Physijs.BoxMesh( geometry, material,0 );
-	mesh.castShadow = true;
-	return mesh;
-}
-
-function createBoxMesh2(color,w,h,d){
-	var geometry = new THREE.BoxGeometry( w, h, d);
-	var material = new THREE.MeshLambertMaterial( { color: color} );
-	mesh = new Physijs.BoxMesh( geometry, material );
-	//mesh = new Physijs.BoxMesh( geometry, material,0 );
-	mesh.castShadow = true;
-	return mesh;
-}
 
 
 function createGround(image){
@@ -324,7 +354,7 @@ function createGround(image){
 
 function createSkyBox(image,k){
 	// creating a textured plane which receives shadows
-	var geometry = new THREE.PlaneGeometry(1105, 776);
+	var geometry = new THREE.PlaneGeometry(80, 80, 80);
 	var texture = new THREE.TextureLoader().load( '../images/'+image );
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.wrapT = THREE.RepeatWrapping;
@@ -383,9 +413,6 @@ function keydown(event){
 		case "s": controls.bwd = true; break;
 		case "a": controls.left = true; break;
 		case "d": controls.right = true; break;
-		case "r": controls.up = true; break;
-		case "f": controls.down = true; break;
-		case "m": controls.speed = 30; break;
   	case " ": controls.fly = true;
         console.log("FLY!!"); break;
 		// switch cameras
@@ -411,9 +438,6 @@ function keyup(event){
 		case "s": controls.bwd   = false; break;
 		case "a": controls.left  = false; break;
 		case "d": controls.right = false; break;
-		case "r": controls.up    = false; break;
-		case "f": controls.down  = false; break;
-		case "m": controls.speed = 10; break;
   	case " ": controls.fly = false; break;
 	}
 }
@@ -450,17 +474,9 @@ function updateAvatar(){
       controls.room1Tele = false;
     }
 
-    if (controls.room2Tele) {
-			gift.position.x=55;
-			gift.position.y=3;
-			gift.position.z=-30;
-			gift.__dirtyPosition=true;
-      controls.room2Tele = false;
-    }
-
 		if (controls.room2Tele2) {
 			suzanne.position.x=-50;
-			suzanne.position.z=30;
+			suzanne.position.z=50;
 			suzanne.__dirtyPosition=true;
 			controls.room2Tele2 = false;
 		}
@@ -482,7 +498,7 @@ function animate() {
 
 		case "youwon":
 			endText.rotateY(0.005);
-			renderer.render( endScene, endCamera );
+			renderer.render(endScene, endCamera );
 			break;
 
 		case "youlose":
@@ -502,11 +518,6 @@ function animate() {
 		 console.log("don't know the scene "+gameState.scene);
 
 	}
-    //var info = document.getElementById("info");
-	// info.innerHTML='<div style="font-size:24pt">Score: '
-	// + gameState.score
-	// + " Health = " + gameState.health
-	// + '</div>';
 }
 
 function initTextMesh(){
@@ -579,16 +590,16 @@ function createTextMesh1(font) {
 	console.log("added textMesh to scene");
 }
 
-function initTextMesh4(){
+function initTextMesh3(){
 	var loader = new THREE.FontLoader();
 	loader.load( '/fonts/helvetiker_regular.typeface.json',
-	      createTextMesh4);
+	      createTextMesh3);
 	console.log("preparing to load the font");
 
 }
-function createTextMesh4(font) {
+function createTextMesh3(font) {
     var textGeometry =
-    new THREE.TextGeometry('Press P to play...',
+    new THREE.TextGeometry('Let the two balls collide for \n 4 times and see what happens!',
       {
        font: font,
        size: 4,
@@ -602,10 +613,72 @@ function createTextMesh4(font) {
      );
 	var textMaterial = new THREE.MeshLambertMaterial( { color: 0xaaaaff } );
 	textMesh = new THREE.Mesh( textGeometry, textMaterial );
-	textMesh.position.x= 20;
-	textMesh.position.z= 30;
+	textMesh.position.x= -90;
+	textMesh.position.z= 10;
 	textMesh.position.y= 10;
 	//textMesh.rotateY(Math.PI);
+	scene.add(textMesh);
+	console.log("added textMesh to scene");
+}
+
+function initTextMesh4(){
+	var loader = new THREE.FontLoader();
+	loader.load( '/fonts/helvetiker_regular.typeface.json',
+	      createTextMesh4);
+	console.log("preparing to load the font");
+
+}
+function createTextMesh4(font) {
+    var textGeometry =
+    new THREE.TextGeometry('Press the space key to fly to room4!!',
+      {
+       font: font,
+       size: 4,
+       height: 2,
+       curveSegments: 12,
+       bevelEnabled: true,
+       bevelThickness: 0.01,
+       bevelSize: 0.08,
+       bevelSegments: 5
+      }
+     );
+	var textMaterial = new THREE.MeshLambertMaterial( { color: 0xaaaaff } );
+	textMesh = new THREE.Mesh( textGeometry, textMaterial );
+	textMesh.position.x= -10;
+	textMesh.position.z= 80;
+	textMesh.position.y= 10;
+	textMesh.rotateY(Math.PI);
+	scene.add(textMesh);
+	console.log("added textMesh to scene");
+}
+
+function initTextMesh5(){
+	var loader = new THREE.FontLoader();
+	loader.load( '/fonts/helvetiker_regular.typeface.json',
+	      createTextMesh5);
+	console.log("preparing to load the font");
+
+}
+function createTextMesh5(font) {
+    var textGeometry =
+    new THREE.TextGeometry('There is something in the toilet.',
+      {
+       font: font,
+       size: 4,
+       height: 2,
+       curveSegments: 12,
+       bevelEnabled: true,
+       bevelThickness: 0.01,
+       bevelSize: 0.08,
+       bevelSegments: 5
+      }
+     );
+	var textMaterial = new THREE.MeshLambertMaterial( { color: 0xaaaaff } );
+	textMesh = new THREE.Mesh( textGeometry, textMaterial );
+	textMesh.position.x= 80;
+	textMesh.position.z= 80;
+	textMesh.position.y= 10;
+	textMesh.rotateY(Math.PI);
 	scene.add(textMesh);
 	console.log("added textMesh to scene");
 }
