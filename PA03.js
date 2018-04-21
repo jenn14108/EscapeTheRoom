@@ -582,7 +582,7 @@ function initTextMesh1(){
 
 function createTextMesh1(font) {
     var textGeometry =
-    new THREE.TextGeometry('Welcome to room 2. \n Hint: something can be moved!',
+    new THREE.TextGeometry('Welcome to room 2. \n Hint: some things can be moved!',
       {
        font: font,
        size: 4,
