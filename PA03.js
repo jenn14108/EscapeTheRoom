@@ -23,7 +23,7 @@ function createLoseScene() {
 	loseScene.add(light3);
 	loseCamera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
 	loseCamera.position.set(0,50,1);
-	loseCamera.lookAt(loseText);
+	loseCamera.lookAt(0,0,0);
 }
 
 
@@ -161,7 +161,7 @@ function createMainScene(){
 	ball5.translateY(2);
 	ball5.addEventListener('collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
 				if (other_object==suzanne){
-					gameState.scene == 'youwon';
+					gameState.scene = 'youwon';
 				}
 			}
 		)
@@ -491,12 +491,6 @@ function updateAvatar(){
 
 function animate() {
 	requestAnimationFrame( animate );
-	// if (suzanne.position.y<=0) {
-	// 	gameState.scene="youlose";
-	// }
-	// if (coffeeTable.position.y<=0) {
-	// 	gameState.scene="youlose";
-	// }
 	switch(gameState.scene) {
 		case "startgame":
 			//startText.rotateY(0.005);
@@ -606,7 +600,7 @@ function initTextMesh3(){
 }
 function createTextMesh3(font) {
     var textGeometry =
-    new THREE.TextGeometry('Let the two balls collide for \n 4 times and see what happens!',
+    new THREE.TextGeometry('Let the two balls collide \n and see what happens!',
       {
        font: font,
        size: 4,
