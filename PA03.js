@@ -410,17 +410,6 @@ function keydown(event){
 		return;
 	}
 
-	if (gameState.scene == 'youwon' && event.key=='r') {
-		gameState.scene = 'main';
-		//gameState.score = 0;
-		return;
-	}
-
-	if (gameState.scene == 'youlose' && event.key=='r'){
-		gameState.scene = 'main';
-		return;
-	}
-
 	switch (event.key){
 		case "w": controls.fwd = true;  break;
 		case "s": controls.bwd = true; break;
