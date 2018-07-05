@@ -1,2 +1,4 @@
 # Escape the room game
 For this project, we designed a little room escape game with the threejs knowledge we learned over the semester. When you first enter the game, you will see a start screen with instructions to move the avatar. Then, there are four levels(rooms) in the scene that the user has to get through to win the game. When they win or they lose, a win or a loss scene will pop up.  We adopted several different threejs features that were covered in lectures throughout the semester. For example, we loaded blender files into our scene to make Physijs objects, used textmesh to display instructions in the scene and added different key controls to manipulate the objects in the game, etc.
+#### Instruction to run the project:
+Download the repository, cd into the repository folder and type in "python -m SimpleHTTPServer" to start a server. Open a browser and go to localhost:8000. Click on PA03.html to play the game.
