@@ -180,7 +180,7 @@ function createMainScene(){
 
 function initSuzanne(){
 	var loader = new THREE.JSONLoader();
-	loader.load("../models/suzanne.json",
+	loader.load("./models/suzanne.json",
 		function ( geometry, materials ) {
 			console.log("loading suzanne");
 			var material = new THREE.MeshLambertMaterial( );
@@ -221,7 +221,7 @@ function createBall(){
 
 function createGift(){
 	var geometry = new THREE.BoxGeometry(5, 5, 5);
-	var texture = new THREE.TextureLoader().load('../images/'+'gift.jpg');
+	var texture = new THREE.TextureLoader().load('./images/'+'gift.jpg');
   var material = new THREE.MeshLambertMaterial( {map: texture});
   var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
 	var mesh = new Physijs.BoxMesh( geometry, material, 100);
@@ -232,7 +232,7 @@ function createGift(){
 
 function createGift1(){
 	var geometry = new THREE.BoxGeometry(5, 5, 5);
-	var texture = new THREE.TextureLoader().load('../images/'+'bluewood.jpeg');
+	var texture = new THREE.TextureLoader().load('./images/'+'bluewood.jpeg');
   var material = new THREE.MeshLambertMaterial( {map: texture});
   var pmaterial = new Physijs.createMaterial(material, 0.9, 0.5);
 	var mesh = new Physijs.BoxMesh( geometry, material, 100);
@@ -243,10 +243,10 @@ function createGift1(){
 
 function initCoffeeTable(){
    var loader = new THREE.JSONLoader();
-   loader.load("../models/coffeeTable.json",
+   loader.load("./models/coffeeTable.json",
 		function ( geometry, materials ) {
 		console.log("loading coffee table");
-		var texture = new THREE.TextureLoader().load('../images/yellowwood.jpeg');
+		var texture = new THREE.TextureLoader().load('./images/yellowwood.jpeg');
 		var material = new THREE.MeshLambertMaterial({map: texture});
 		var pmaterial = new Physijs.createMaterial(material, 0.2, 0.5);
 		coffeeTable = new Physijs.BoxMesh(geometry, pmaterial, 200);
@@ -270,7 +270,7 @@ function initCoffeeTable(){
 
 function initToiletOBJ(){
 	var loader = new THREE.OBJLoader();
-	loader.load("../models/toilet.obj",
+	loader.load("./models/toilet.obj",
 		function (toilet) {
 		console.log("loading toilet file");
 		toilet.castShadow = true;
@@ -335,7 +335,7 @@ function createPointLight(){
 function createGround(image){
 	// creating a textured plane which receives shadows
 	var geometry = new THREE.PlaneGeometry( 180, 180, 128 );
-	var texture = new THREE.TextureLoader().load( '../images/'+image );
+	var texture = new THREE.TextureLoader().load( './images/'+image );
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.wrapT = THREE.RepeatWrapping;
 	texture.repeat.set( 15, 15 );
@@ -355,7 +355,7 @@ function createGround(image){
 function createSkyBox(image,k){
 	// creating a textured plane which receives shadows
 	var geometry = new THREE.SphereGeometry( 80, 80, 80 );
-	var texture = new THREE.TextureLoader().load( '../images/'+image );
+	var texture = new THREE.TextureLoader().load( './images/'+image );
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.wrapT = THREE.RepeatWrapping;
 	texture.repeat.set( k, k );
@@ -370,7 +370,7 @@ function createSkyBox(image,k){
 function createSkyBox1(image,k){
 	// creating a textured plane which receives shadows
 	var geometry = new THREE.PlaneGeometry(110,77.6);
-	var texture = new THREE.TextureLoader().load( '../images/'+image );
+	var texture = new THREE.TextureLoader().load( './images/'+image );
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.wrapT = THREE.RepeatWrapping;
 	texture.repeat.set( k, k );
@@ -385,7 +385,7 @@ function createSkyBox1(image,k){
 function createWalls(image,k, size){
 	// creating a textured plane which receives shadows
 	var geometry = new THREE.PlaneGeometry(size,120,size);
-	var texture = new THREE.TextureLoader().load( '../images/'+image );
+	var texture = new THREE.TextureLoader().load( './images/'+image );
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.wrapT = THREE.RepeatWrapping;
 	texture.repeat.set(k,k);
